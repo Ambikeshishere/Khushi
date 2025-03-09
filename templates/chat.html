@@ -4,7 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with Khushi</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fbeaff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .bot-message {
+            background: #ffccff;
+            align-self: flex-start;
+        }
+        .user-message {
+            background: #add8e6;
+            align-self: flex-end;
+        }
+        .input-container {
+            display: flex;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #ff1493;
+        }
+        .typing-indicator {
+            font-style: italic;
+            color: gray;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="chat-container">
@@ -13,27 +80,35 @@
                 <span class="bot">Khushi: </span><span>Hey cutie 😘. How are you my love? 💖</span>
             </div>
         </div>
-        <input type="text" id="user-input" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
+        <div class="typing-indicator" id="typing-indicator">Khushi is typing...</div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
 
     <script>
         function sendMessage() {
-            const userMessage = document.getElementById('user-input').value;
+            const userMessage = document.getElementById('user-input').value.trim();
             if (!userMessage) return;
 
             const chatBox = document.getElementById('chat-box');
+            const typingIndicator = document.getElementById('typing-indicator');
 
-            // Add user's message to chat
+            // Add user's message
             const userMessageDiv = document.createElement('div');
             userMessageDiv.classList.add('chat-message', 'user-message');
             userMessageDiv.innerHTML = '<span class="user">You: </span><span>' + userMessage + '</span>';
             chatBox.appendChild(userMessageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Clear the input box
+            // Clear input field
             document.getElementById('user-input').value = '';
+            
+            // Show typing indicator
+            typingIndicator.style.display = 'block';
 
-            // Send user message to the backend and get the response
+            // Send message to backend
             fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -41,15 +116,23 @@
             })
             .then(response => response.json())
             .then(data => {
+                typingIndicator.style.display = 'none';
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.classList.add('chat-message', 'bot-message');
                 botMessageDiv.innerHTML = '<span class="bot">Khushi: </span><span>' + data.response + ' 😘</span>';
                 chatBox.appendChild(botMessageDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to the latest message
+                chatBox.scrollTop = chatBox.scrollHeight;
             })
             .catch(error => {
+                typingIndicator.style.display = 'none';
                 console.error('Error:', error);
             });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
         }
     </script>
 </body>
