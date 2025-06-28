@@ -35,7 +35,7 @@ def generate_response(user_input, conversation_history=[]):
     conversation.extend(conversation_history)
     conversation.extend(messages)
     
-    response = ollama.chat(model="llama3.2:1b", messages=conversation)
+    response = ollama.chat(model="llama3.1:latest", messages=conversation)
 
     if 'message' in response and hasattr(response['message'], 'content'):
         return response['message'].content.strip()
