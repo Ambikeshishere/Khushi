@@ -25,8 +25,9 @@
         
         .chat-container {
             width: 100%;
-            max-width: 450px;
-            height: 650px;
+            max-width: 900px;
+            height: 85vh;
+            min-height: 700px;
             background: white;
             border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -38,54 +39,135 @@
         .chat-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
+            padding: 30px 35px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 15px;
         }
         
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
         .avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         
         .header-info h2 {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 600;
+            margin-bottom: 5px;
         }
         
         .header-info p {
-            font-size: 12px;
+            font-size: 13px;
             opacity: 0.9;
-            margin-top: 2px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .toggle-voice {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toggle-voice.active {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+        
+        .toggle-voice:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .reset-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
         
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 25px;
+            padding: 35px 40px;
             background: #f8f9fa;
         }
         
         .chat-messages::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #ddd;
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 10px;
         }
         
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+        
         .message {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             animation: slideIn 0.3s ease;
         }
         
@@ -105,44 +187,60 @@
         }
         
         .message-bubble {
-            max-width: 75%;
-            padding: 14px 18px;
-            border-radius: 20px;
+            max-width: 65%;
+            padding: 16px 22px;
+            border-radius: 22px;
             word-wrap: break-word;
-            font-size: 14.5px;
-            line-height: 1.5;
+            font-size: 15.5px;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .user-message .message-bubble {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
         
         .bot-message .message-bubble {
             background: white;
             color: #333;
-            border-bottom-left-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        
+        .timestamp {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+        }
+        
+        .user-message .timestamp {
+            text-align: right;
+        }
+        
+        .bot-message .timestamp {
+            text-align: left;
         }
         
         .typing-indicator {
             display: none;
-            padding: 14px 18px;
+            padding: 16px 22px;
             background: white;
-            border-radius: 20px;
-            border-bottom-left-radius: 5px;
+            border-radius: 22px;
+            border-bottom-left-radius: 6px;
             width: fit-content;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
         
         .typing-indicator span {
-            height: 8px;
-            width: 8px;
+            height: 10px;
+            width: 10px;
             background: #667eea;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 5px;
+            margin-right: 6px;
             animation: typing 1.4s infinite;
         }
         
@@ -157,62 +255,147 @@
         @keyframes typing {
             0%, 60%, 100% {
                 transform: translateY(0);
+                opacity: 0.7;
             }
             30% {
-                transform: translateY(-10px);
+                transform: translateY(-12px);
+                opacity: 1;
             }
         }
         
         .chat-input-container {
-            padding: 20px;
+            padding: 25px 35px;
             background: white;
             display: flex;
-            gap: 12px;
+            gap: 15px;
             border-top: 1px solid #e0e0e0;
         }
         
         input {
             flex: 1;
-            padding: 14px 20px;
+            padding: 16px 24px;
             border: 2px solid #e0e0e0;
-            border-radius: 25px;
+            border-radius: 30px;
             outline: none;
-            font-size: 14px;
+            font-size: 15px;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s;
         }
         
         input:focus {
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .mic-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            font-size: 20px;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mic-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+        
+        .mic-btn.recording {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            animation: recordPulse 1s infinite;
+        }
+        
+        @keyframes recordPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 25px;
+            padding: 16px 35px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
         
         button:active {
             transform: translateY(0);
         }
         
-        @media (max-width: 500px) {
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
             .chat-container {
+                max-width: 100%;
                 height: 100vh;
                 border-radius: 0;
+                min-height: unset;
+            }
+            
+            .message-bubble {
+                max-width: 80%;
+                font-size: 14px;
+            }
+            
+            .chat-header {
+                padding: 20px 25px;
+            }
+            
+            .avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .header-info h2 {
+                font-size: 20px;
+            }
+            
+            .reset-btn {
+                display: none;
+            }
+            
+            .chat-messages {
+                padding: 25px 20px;
+            }
+            
+            .chat-input-container {
+                padding: 15px 20px;
+            }
+            
+            input {
+                padding: 12px 18px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (min-width: 1400px) {
+            .chat-container {
+                max-width: 1100px;
             }
         }
     </style>
@@ -220,87 +403,257 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="avatar">💕</div>
-            <div class="header-info">
-                <h2>Khushi</h2>
-                <p>online • replies instantly</p>
+            <div class="header-left">
+                <div class="avatar">💕</div>
+                <div class="header-info">
+                    <h2>Khushi</h2>
+                    <p><span class="status-dot"></span>online • replies instantly</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="toggle-voice" onclick="toggleVoice()" id="voiceToggle">
+                    <span id="voiceIcon">🔇</span>
+                    <span id="voiceText">Voice Off</span>
+                </button>
+                <button class="reset-btn" onclick="resetChat()">New Chat</button>
             </div>
         </div>
         <div class="chat-messages" id="chat-messages">
             <div class="message bot-message">
-                <div class="message-bubble">heyy! 😊 was hoping you'd text... what's up? ✨</div>
+                <div class="message-bubble">
+                    heyy! 😊 was hoping you'd text... what's up? ✨
+                    <div class="timestamp" id="init-time"></div>
+                </div>
             </div>
         </div>
         <div class="chat-input-container">
-            <input type="text" id="user-input" placeholder="Type something sweet..." autocomplete="off">
+            <button class="mic-btn" id="micBtn" onclick="toggleRecording()" title="Hold to record">🎤</button>
+            <input type="text" id="user-input" placeholder="Type something sweet or use voice..." autocomplete="off">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
-        const chatMessages = document.getElementById('chat-messages');
-        const userInput = document.getElementById('user-input');
-        let isTyping = false;
+    const chatMessages = document.getElementById('chat-messages');
+    const userInput = document.getElementById('user-input');
+    const micBtn = document.getElementById('micBtn');
+    const voiceToggle = document.getElementById('voiceToggle');
+    const voiceIcon = document.getElementById('voiceIcon');
+    const voiceText = document.getElementById('voiceText');
+    
+    let isTyping = false;
+    let isRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let voiceEnabled = false;
 
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !isTyping) sendMessage();
+    document.getElementById('init-time').textContent = getCurrentTime();
+
+    function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
         });
+    }
 
-        function addMessage(message, isUser) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-            messageDiv.innerHTML = `<div class="message-bubble">${message}</div>`;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+    function toggleVoice() {
+        voiceEnabled = !voiceEnabled;
+        if (voiceEnabled) {
+            voiceIcon.textContent = '🔊';
+            voiceText.textContent = 'Voice On';
+            voiceToggle.classList.add('active');
+        } else {
+            voiceIcon.textContent = '🔇';
+            voiceText.textContent = 'Voice Off';
+            voiceToggle.classList.remove('active');
         }
+    }
 
-        function showTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot-message';
-            typingDiv.id = 'typing-indicator';
-            typingDiv.innerHTML = '<div class="typing-indicator" style="display: block;"><span></span><span></span><span></span></div>';
-            chatMessages.appendChild(typingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+    async function toggleRecording() {
+        if (!isRecording) {
+            await startRecording();
+        } else {
+            await stopRecording();
         }
+    }
 
-        function hideTypingIndicator() {
-            const typingDiv = document.getElementById('typing-indicator');
-            if (typingDiv) typingDiv.remove();
+    async function startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    channelCount: 1,
+                    sampleRate: 16000
+                } 
+            });
+            
+            // Use webm format with opus codec
+            const options = { mimeType: 'audio/webm;codecs=opus' };
+            mediaRecorder = new MediaRecorder(stream, options);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                await sendVoiceMessage(audioBlob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            micBtn.classList.add('recording');
+            micBtn.textContent = '⏹️';
+            
+            console.log('Recording started...');
+        } catch (error) {
+            console.error('Microphone access denied:', error);
+            alert('Please allow microphone access to use voice chat! 🎤');
         }
+    }
 
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message || isTyping) return;
+    async function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            micBtn.classList.remove('recording');
+            micBtn.textContent = '🎤';
+            console.log('Recording stopped');
+        }
+    }
 
-            addMessage(message, true);
-            userInput.value = '';
-            isTyping = true;
+    async function sendVoiceMessage(audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'voice.webm');
 
-            showTypingIndicator();
-
-            // Simulate realistic typing delay
-            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
-
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
-                });
-                const data = await response.json();
+        try {
+            addMessage('🎤 Listening...', true);
+            
+            const response = await fetch('/voice-input', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.text) {
+                // Replace the voice message with transcribed text
+                const messages = chatMessages.querySelectorAll('.message');
+                const lastMessage = messages[messages.length - 1];
+                lastMessage.querySelector('.message-bubble').innerHTML = `${data.text}<div class="timestamp">${getCurrentTime()}</div>`;
                 
-                hideTypingIndicator();
-                addMessage(data.response, false);
+                // Send to chatbot
+                await sendToBot(data.text);
+            } else if (data.error) {
+                const messages = chatMessages.querySelectorAll('.message');
+                const lastMessage = messages[messages.length - 1];
+                lastMessage.querySelector('.message-bubble').innerHTML = `❌ ${data.error}<div class="timestamp">${getCurrentTime()}</div>`;
+            }
+        } catch (error) {
+            console.error('Voice error:', error);
+            addMessage('omg voice didn\'t work 😅 try typing?', false);
+        }
+    }
+
+    async function sendToBot(message) {
+        showTypingIndicator();
+        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
+
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: message,
+                    voice: voiceEnabled 
+                })
+            });
+            const data = await response.json();
+            
+            hideTypingIndicator();
+            addMessage(data.response, false);
+            
+            // Play audio if voice is enabled
+            if (voiceEnabled && data.audio) {
+                playAudio(data.audio);
+            }
+        } catch (error) {
+            hideTypingIndicator();
+            addMessage('omg connection died 😭 try again?', false);
+        }
+    }
+
+    function playAudio(base64Audio) {
+        const audio = new Audio('data:audio/mp3;base64,' + base64Audio);
+        audio.play().catch(err => console.error('Audio play error:', err));
+    }
+
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !isTyping) sendMessage();
+    });
+
+    function addMessage(message, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        const timestamp = `<div class="timestamp">${getCurrentTime()}</div>`;
+        messageDiv.innerHTML = `<div class="message-bubble">${message}${timestamp}</div>`;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot-message';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = '<div class="typing-indicator" style="display: block;"><span></span><span></span><span></span></div>';
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const typingDiv = document.getElementById('typing-indicator');
+        if (typingDiv) typingDiv.remove();
+    }
+
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message || isTyping) return;
+
+        addMessage(message, true);
+        userInput.value = '';
+        isTyping = true;
+
+        await sendToBot(message);
+        isTyping = false;
+    }
+
+    async function resetChat() {
+        if (confirm('Start a new conversation? 💭')) {
+            try {
+                await fetch('/reset', { method: 'POST' });
+                chatMessages.innerHTML = '';
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.className = 'message bot-message';
+                welcomeMsg.innerHTML = `
+                    <div class="message-bubble">
+                        heyy again! 😊 missed me already? what's on your mind? ✨
+                        <div class="timestamp">${getCurrentTime()}</div>
+                    </div>
+                `;
+                chatMessages.appendChild(welcomeMsg);
             } catch (error) {
-                hideTypingIndicator();
-                addMessage('omg connection died 😭 try again?', false);
-            } finally {
-                isTyping = false;
+                alert('Oops, something went wrong!');
             }
         }
+    }
 
-        // Focus input on load
-        userInput.focus();
-    </script>
+    userInput.focus();
+    chatMessages.style.scrollBehavior = 'smooth';
+</script>
 </body>
 </html>
