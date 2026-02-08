@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khushi 💕</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
         
@@ -85,9 +86,19 @@
             animation: pulse 2s infinite;
         }
         
+        .status-dot.calling {
+            background: #fbbf24;
+            animation: callPulse 1s infinite;
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
+        }
+        
+        @keyframes callPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
         }
         
         .header-controls {
@@ -95,30 +106,36 @@
             gap: 10px;
         }
         
-        .toggle-voice {
+        .call-btn {
             background: rgba(255,255,255,0.2);
             border: 2px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
             transition: all 0.3s;
             font-family: 'Poppins', sans-serif;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
-        .toggle-voice.active {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
-        }
-        
-        .toggle-voice:hover {
+        .call-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: translateY(-2px);
+        }
+        
+        .call-btn.active {
+            background: #ef4444;
+            border-color: #dc2626;
+            animation: callButtonPulse 2s infinite;
+        }
+        
+        @keyframes callButtonPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
         }
         
         .reset-btn {
@@ -208,6 +225,30 @@
             color: #333;
             border-bottom-left-radius: 6px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        
+        .voice-indicator {
+            display: inline-block;
+            margin-left: 8px;
+        }
+        
+        .voice-wave {
+            display: inline-block;
+            width: 3px;
+            height: 12px;
+            background: #667eea;
+            margin: 0 2px;
+            border-radius: 3px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        
+        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes wave {
+            0%, 100% { height: 12px; }
+            50% { height: 20px; }
         }
         
         .timestamp {
@@ -317,7 +358,7 @@
         
         @keyframes recordPulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
         }
         
         button {
@@ -340,6 +381,130 @@
         
         button:active {
             transform: translateY(0);
+        }
+        
+        /* Call Mode Overlay */
+        .call-mode-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .call-mode-overlay.active {
+            display: flex;
+        }
+        
+        .call-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+            color: white;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .call-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .call-screen h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .call-status {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .call-transcript {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .transcript-item {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .transcript-item.user {
+            text-align: right;
+        }
+        
+        .transcript-text {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .call-controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .call-control-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .call-control-btn.end-call {
+            background: #ef4444;
+        }
+        
+        .call-control-btn.end-call:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        
+        .call-control-btn.push-to-talk {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .call-control-btn.push-to-talk:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .call-control-btn.push-to-talk.active {
+            background: #10b981;
+            animation: talkPulse 1s infinite;
+        }
+        
+        @keyframes talkPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
         }
         
         /* Mobile Responsive */
@@ -391,6 +556,16 @@
                 padding: 12px 24px;
                 font-size: 14px;
             }
+            
+            .call-screen {
+                padding: 40px 30px;
+            }
+            
+            .call-avatar {
+                width: 120px;
+                height: 120px;
+                font-size: 60px;
+            }
         }
         
         @media (min-width: 1400px) {
@@ -407,13 +582,13 @@
                 <div class="avatar">💕</div>
                 <div class="header-info">
                     <h2>Khushi</h2>
-                    <p><span class="status-dot"></span>online • replies instantly</p>
+                    <p><span class="status-dot" id="statusDot"></span><span id="statusText">online</span></p>
                 </div>
             </div>
             <div class="header-controls">
-                <button class="toggle-voice" onclick="toggleVoice()" id="voiceToggle">
-                    <span id="voiceIcon">🔇</span>
-                    <span id="voiceText">Voice Off</span>
+                <button class="call-btn" onclick="toggleCall()" id="callBtn">
+                    <span id="callIcon">📞</span>
+                    <span id="callText">Voice Call</span>
                 </button>
                 <button class="reset-btn" onclick="resetChat()">New Chat</button>
             </div>
@@ -427,233 +602,406 @@
             </div>
         </div>
         <div class="chat-input-container">
-            <button class="mic-btn" id="micBtn" onclick="toggleRecording()" title="Hold to record">🎤</button>
-            <input type="text" id="user-input" placeholder="Type something sweet or use voice..." autocomplete="off">
+            <button class="mic-btn" id="micBtn" onclick="toggleRecording()" title="Click to record">🎤</button>
+            <input type="text" id="user-input" placeholder="Type something sweet or click call..." autocomplete="off">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
+    <!-- Call Mode Overlay -->
+    <div class="call-mode-overlay" id="callOverlay">
+        <div class="call-screen">
+            <div class="call-avatar">💕</div>
+            <h2>Khushi</h2>
+            <p class="call-status" id="callStatus">Connecting...</p>
+            
+            <div class="call-transcript" id="callTranscript">
+                <div style="text-align: center; opacity: 0.7;">
+                    Call transcript will appear here...
+                </div>
+            </div>
+            
+            <div class="call-controls">
+                <button class="call-control-btn push-to-talk" id="pushToTalkBtn" 
+                        onmousedown="startTalking()" onmouseup="stopTalking()"
+                        ontouchstart="startTalking()" ontouchend="stopTalking()">
+                    🎤
+                </button>
+                <button class="call-control-btn end-call" onclick="endCall()">
+                    📞
+                </button>
+            </div>
+            <p style="margin-top: 20px; opacity: 0.8; font-size: 14px;">
+                Hold mic button to talk
+            </p>
+        </div>
+    </div>
+
     <script>
-    const chatMessages = document.getElementById('chat-messages');
-    const userInput = document.getElementById('user-input');
-    const micBtn = document.getElementById('micBtn');
-    const voiceToggle = document.getElementById('voiceToggle');
-    const voiceIcon = document.getElementById('voiceIcon');
-    const voiceText = document.getElementById('voiceText');
-    
-    let isTyping = false;
-    let isRecording = false;
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let voiceEnabled = false;
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const micBtn = document.getElementById('micBtn');
+        const callBtn = document.getElementById('callBtn');
+        const callIcon = document.getElementById('callIcon');
+        const callText = document.getElementById('callText');
+        const callOverlay = document.getElementById('callOverlay');
+        const callStatus = document.getElementById('callStatus');
+        const callTranscript = document.getElementById('callTranscript');
+        const pushToTalkBtn = document.getElementById('pushToTalkBtn');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        
+        let isTyping = false;
+        let isRecording = false;
+        let inCall = false;
+        let isTalking = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let socket = null;
 
-    document.getElementById('init-time').textContent = getCurrentTime();
+        document.getElementById('init-time').textContent = getCurrentTime();
 
-    function getCurrentTime() {
-        const now = new Date();
-        return now.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
+        // Initialize Socket.IO
+        socket = io();
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
         });
-    }
 
-    function toggleVoice() {
-        voiceEnabled = !voiceEnabled;
-        if (voiceEnabled) {
-            voiceIcon.textContent = '🔊';
-            voiceText.textContent = 'Voice On';
-            voiceToggle.classList.add('active');
-        } else {
-            voiceIcon.textContent = '🔇';
-            voiceText.textContent = 'Voice Off';
-            voiceToggle.classList.remove('active');
-        }
-    }
-
-    async function toggleRecording() {
-        if (!isRecording) {
-            await startRecording();
-        } else {
-            await stopRecording();
-        }
-    }
-
-    async function startRecording() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: {
-                    channelCount: 1,
-                    sampleRate: 16000
-                } 
-            });
+        socket.on('voice_response', (data) => {
+            console.log('Received voice response:', data.text);
             
-            // Use webm format with opus codec
-            const options = { mimeType: 'audio/webm;codecs=opus' };
-            mediaRecorder = new MediaRecorder(stream, options);
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                await sendVoiceMessage(audioBlob);
-                stream.getTracks().forEach(track => track.stop());
-            };
-
-            mediaRecorder.start();
-            isRecording = true;
-            micBtn.classList.add('recording');
-            micBtn.textContent = '⏹️';
-            
-            console.log('Recording started...');
-        } catch (error) {
-            console.error('Microphone access denied:', error);
-            alert('Please allow microphone access to use voice chat! 🎤');
-        }
-    }
-
-    async function stopRecording() {
-        if (mediaRecorder && isRecording) {
-            mediaRecorder.stop();
-            isRecording = false;
-            micBtn.classList.remove('recording');
-            micBtn.textContent = '🎤';
-            console.log('Recording stopped');
-        }
-    }
-
-    async function sendVoiceMessage(audioBlob) {
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'voice.webm');
-
-        try {
-            addMessage('🎤 Listening...', true);
-            
-            const response = await fetch('/voice-input', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (data.text) {
-                // Replace the voice message with transcribed text
-                const messages = chatMessages.querySelectorAll('.message');
-                const lastMessage = messages[messages.length - 1];
-                lastMessage.querySelector('.message-bubble').innerHTML = `${data.text}<div class="timestamp">${getCurrentTime()}</div>`;
+            if (inCall) {
+                // Add to call transcript
+                addToTranscript(data.text, false);
                 
-                // Send to chatbot
-                await sendToBot(data.text);
-            } else if (data.error) {
-                const messages = chatMessages.querySelectorAll('.message');
-                const lastMessage = messages[messages.length - 1];
-                lastMessage.querySelector('.message-bubble').innerHTML = `❌ ${data.error}<div class="timestamp">${getCurrentTime()}</div>`;
+                // Update status
+                if (data.type === 'greeting') {
+                    callStatus.textContent = 'Connected';
+                } else if (data.type === 'goodbye') {
+                    callStatus.textContent = 'Call ending...';
+                    setTimeout(() => {
+                        endCall();
+                    }, 2000);
+                } else {
+                    callStatus.textContent = 'Listening...';
+                }
             }
-        } catch (error) {
-            console.error('Voice error:', error);
-            addMessage('omg voice didn\'t work 😅 try typing?', false);
-        }
-    }
-
-    async function sendToBot(message) {
-        showTypingIndicator();
-        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
-
-        try {
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: message,
-                    voice: voiceEnabled 
-                })
-            });
-            const data = await response.json();
             
-            hideTypingIndicator();
-            addMessage(data.response, false);
-            
-            // Play audio if voice is enabled
-            if (voiceEnabled && data.audio) {
+            // Play audio
+            if (data.audio) {
                 playAudio(data.audio);
             }
-        } catch (error) {
-            hideTypingIndicator();
-            addMessage('omg connection died 😭 try again?', false);
+        });
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
         }
-    }
 
-    function playAudio(base64Audio) {
-        const audio = new Audio('data:audio/mp3;base64,' + base64Audio);
-        audio.play().catch(err => console.error('Audio play error:', err));
-    }
-
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !isTyping) sendMessage();
-    });
-
-    function addMessage(message, isUser) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-        const timestamp = `<div class="timestamp">${getCurrentTime()}</div>`;
-        messageDiv.innerHTML = `<div class="message-bubble">${message}${timestamp}</div>`;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function showTypingIndicator() {
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'message bot-message';
-        typingDiv.id = 'typing-indicator';
-        typingDiv.innerHTML = '<div class="typing-indicator" style="display: block;"><span></span><span></span><span></span></div>';
-        chatMessages.appendChild(typingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function hideTypingIndicator() {
-        const typingDiv = document.getElementById('typing-indicator');
-        if (typingDiv) typingDiv.remove();
-    }
-
-    async function sendMessage() {
-        const message = userInput.value.trim();
-        if (!message || isTyping) return;
-
-        addMessage(message, true);
-        userInput.value = '';
-        isTyping = true;
-
-        await sendToBot(message);
-        isTyping = false;
-    }
-
-    async function resetChat() {
-        if (confirm('Start a new conversation? 💭')) {
-            try {
-                await fetch('/reset', { method: 'POST' });
-                chatMessages.innerHTML = '';
-                const welcomeMsg = document.createElement('div');
-                welcomeMsg.className = 'message bot-message';
-                welcomeMsg.innerHTML = `
-                    <div class="message-bubble">
-                        heyy again! 😊 missed me already? what's on your mind? ✨
-                        <div class="timestamp">${getCurrentTime()}</div>
-                    </div>
-                `;
-                chatMessages.appendChild(welcomeMsg);
-            } catch (error) {
-                alert('Oops, something went wrong!');
+        function toggleCall() {
+            if (!inCall) {
+                startCall();
+            } else {
+                endCall();
             }
         }
-    }
 
-    userInput.focus();
-    chatMessages.style.scrollBehavior = 'smooth';
-</script>
+        function startCall() {
+            inCall = true;
+            callOverlay.classList.add('active');
+            callBtn.classList.add('active');
+            callIcon.textContent = '📞';
+            callText.textContent = 'End Call';
+            statusDot.classList.add('calling');
+            statusText.textContent = 'in call';
+            
+            callStatus.textContent = 'Connecting...';
+            callTranscript.innerHTML = '<div style="text-align: center; opacity: 0.7;">Starting call...</div>';
+            
+            // Emit start call event
+            socket.emit('start_call');
+        }
+
+        function endCall() {
+            if (!inCall) return;
+            
+            socket.emit('end_call');
+            
+            setTimeout(() => {
+                inCall = false;
+                callOverlay.classList.remove('active');
+                callBtn.classList.remove('active');
+                callIcon.textContent = '📞';
+                callText.textContent = 'Voice Call';
+                statusDot.classList.remove('calling');
+                statusText.textContent = 'online';
+            }, 1500);
+        }
+
+        function addToTranscript(text, isUser) {
+            const item = document.createElement('div');
+            item.className = `transcript-item ${isUser ? 'user' : 'bot'}`;
+            item.innerHTML = `<div class="transcript-text">${text}</div>`;
+            
+            // Clear initial message
+            if (callTranscript.querySelector('div[style]')) {
+                callTranscript.innerHTML = '';
+            }
+            
+            callTranscript.appendChild(item);
+            callTranscript.scrollTop = callTranscript.scrollHeight;
+        }
+
+        async function startTalking() {
+            if (!inCall || isTalking) return;
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 16000
+                    } 
+                });
+                
+                const options = { mimeType: 'audio/webm;codecs=opus' };
+                mediaRecorder = new MediaRecorder(stream, options);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await sendVoiceToCall(audioBlob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isTalking = true;
+                pushToTalkBtn.classList.add('active');
+                callStatus.textContent = 'Listening to you...';
+                
+                console.log('Started talking');
+            } catch (error) {
+                console.error('Microphone access denied:', error);
+                alert('Please allow microphone access! 🎤');
+            }
+        }
+
+        function stopTalking() {
+            if (!isTalking || !mediaRecorder) return;
+            
+            mediaRecorder.stop();
+            isTalking = false;
+            pushToTalkBtn.classList.remove('active');
+            callStatus.textContent = 'Processing...';
+            
+            console.log('Stopped talking');
+        }
+
+        async function sendVoiceToCall(audioBlob) {
+            try {
+                // Convert blob to base64
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64Audio = reader.result.split(',')[1];
+                    socket.emit('voice_message', { audio: base64Audio });
+                };
+                reader.readAsDataURL(audioBlob);
+            } catch (error) {
+                console.error('Error sending voice:', error);
+                callStatus.textContent = 'Error - Try again';
+            }
+        }
+
+        function playAudio(base64Audio) {
+            const audio = new Audio('data:audio/mp3;base64,' + base64Audio);
+            audio.play().catch(err => console.error('Audio play error:', err));
+        }
+
+        // Regular text chat functions
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                await stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 16000
+                    } 
+                });
+                
+                const options = { mimeType: 'audio/webm;codecs=opus' };
+                mediaRecorder = new MediaRecorder(stream, options);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await sendVoiceMessage(audioBlob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                micBtn.classList.add('recording');
+                micBtn.textContent = '⏹️';
+                
+                console.log('Recording started...');
+            } catch (error) {
+                console.error('Microphone access denied:', error);
+                alert('Please allow microphone access to use voice! 🎤');
+            }
+        }
+
+        async function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                micBtn.classList.remove('recording');
+                micBtn.textContent = '🎤';
+                console.log('Recording stopped');
+            }
+        }
+
+        async function sendVoiceMessage(audioBlob) {
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'voice.webm');
+
+            try {
+                addMessage('🎤 Listening...', true);
+                
+                const response = await fetch('/voice-input', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.text) {
+                    const messages = chatMessages.querySelectorAll('.message');
+                    const lastMessage = messages[messages.length - 1];
+                    lastMessage.querySelector('.message-bubble').innerHTML = `${data.text}<div class="timestamp">${getCurrentTime()}</div>`;
+                    
+                    await sendToBot(data.text);
+                } else {
+                    const messages = chatMessages.querySelectorAll('.message');
+                    const lastMessage = messages[messages.length - 1];
+                    lastMessage.querySelector('.message-bubble').innerHTML = `❌ Couldn't understand<div class="timestamp">${getCurrentTime()}</div>`;
+                }
+            } catch (error) {
+                console.error('Voice error:', error);
+                addMessage('omg voice didn\'t work 😅 try typing?', false);
+            }
+        }
+
+        async function sendToBot(message) {
+            showTypingIndicator();
+            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: message,
+                        voice: true 
+                    })
+                });
+                const data = await response.json();
+                
+                hideTypingIndicator();
+                addMessage(data.response, false);
+                
+                if (data.audio) {
+                    playAudio(data.audio);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('omg connection died 😭 try again?', false);
+            }
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isTyping) sendMessage();
+        });
+
+        function addMessage(message, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            const timestamp = `<div class="timestamp">${getCurrentTime()}</div>`;
+            messageDiv.innerHTML = `<div class="message-bubble">${message}${timestamp}</div>`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = '<div class="typing-indicator" style="display: block;"><span></span><span></span><span></span></div>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) typingDiv.remove();
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message || isTyping) return;
+
+            addMessage(message, true);
+            userInput.value = '';
+            isTyping = true;
+
+            await sendToBot(message);
+            isTyping = false;
+        }
+
+        async function resetChat() {
+            if (confirm('Start a new conversation? 💭')) {
+                try {
+                    await fetch('/reset', { method: 'POST' });
+                    chatMessages.innerHTML = '';
+                    const welcomeMsg = document.createElement('div');
+                    welcomeMsg.className = 'message bot-message';
+                    welcomeMsg.innerHTML = `
+                        <div class="message-bubble">
+                            heyy again! 😊 missed me already? what's on your mind? ✨
+                            <div class="timestamp">${getCurrentTime()}</div>
+                        </div>
+                    `;
+                    chatMessages.appendChild(welcomeMsg);
+                } catch (error) {
+                    alert('Oops, something went wrong!');
+                }
+            }
+        }
+
+        userInput.focus();
+        chatMessages.style.scrollBehavior = 'smooth';
+    </script>
 </body>
 </html>
